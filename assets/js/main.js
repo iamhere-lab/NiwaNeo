@@ -191,6 +191,9 @@
 
     var payload = {
       project: "Niwa & Neo",
+      developer: "Assetz Property Group & KVN",
+      location: "Bagalur, North Bengaluru",
+      source: "Website - Niwa & Neo landing page",
       name: v.name,
       phone: v.cc + v.digits,
       email: v.email,
@@ -212,14 +215,23 @@
     var controller = "AbortController" in window ? new AbortController() : null;
     var timer = setTimeout(function () { if (controller) controller.abort(); }, 15000);
 
-    fetch(CFG.leadEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": CFG.leadEndpointSimpleRequest ? "text/plain;charset=utf-8" : "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller ? controller.signal : undefined
-    }).then(function (res) {
+    var mode = CFG.leadEndpointMode || "json";
+    var req = { method: "POST", signal: controller ? controller.signal : undefined };
+    if (mode === "form") {
+      /* URL-encoded form post: no CORS preflight, and webhook tools (Pabbly, Zapier, Make) map each key as a field.
+       * no-cors because these listeners don't send CORS headers; a network failure still rejects. */
+      var fd = new URLSearchParams();
+      Object.keys(payload).forEach(function (k) { fd.append(k, payload[k] == null ? "" : String(payload[k])); });
+      req.mode = "no-cors";
+      req.headers = { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" };
+      req.body = fd.toString();
+    } else {
+      req.headers = { "Content-Type": CFG.leadEndpointSimpleRequest ? "text/plain;charset=utf-8" : "application/json" };
+      req.body = JSON.stringify(payload);
+    }
+    fetch(CFG.leadEndpoint, req).then(function (res) {
       clearTimeout(timer);
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (res.type !== "opaque" && !res.ok) throw new Error("HTTP " + res.status);
       submitted = true; ss("ss_lead", "1"); unlockPlans();
       track("lead_submit_success", { form_id: formId, intent: intent, configuration: config || "not_specified" });
       if (CFG.thankYouUrl) location.assign(CFG.thankYouUrl);

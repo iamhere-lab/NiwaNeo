@@ -8,7 +8,11 @@ window.SS_CONFIG = {
    * (Vercel function, Google Apps Script web app, Pabbly webhook, Leadrat proxy).
    * Leave empty until a real endpoint exists: the form then refuses to submit
    * and offers the phone number instead of showing a fake success message. */
-  leadEndpoint: "",
+  leadEndpoint: "https://connect.pabbly.com/webhook-listener/webhook/IjU3NjUwNTY1MDYzNTA0MzY1MjZjNTUzNyI_3D_pc/IjU3NjcwNTZiMDYzNzA0MzU1MjY5NTUzMjUxM2Ii_pc",
+
+  /* "form" = URL-encoded POST without a CORS preflight (right for Pabbly / Zapier / Make webhooks).
+   * "json" = JSON POST (for your own endpoint that answers CORS). */
+  leadEndpointMode: "form",
 
   /* Send as text/plain to avoid a CORS preflight (needed for Google Apps Script). */
   leadEndpointSimpleRequest: false,
