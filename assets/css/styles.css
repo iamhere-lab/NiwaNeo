@@ -403,3 +403,7 @@ html:not(.ss-editing) [data-edit]:empty { display: none; }
 .hero-copy { text-shadow: 0 2px 14px rgba(0,0,0,.55); }
 .hero-line { color: #fff; font-weight: 500; }
 @media (max-width: 899px) { .hero-shade { background: linear-gradient(180deg, rgba(8,8,8,.6) 0%, rgba(8,8,8,.7) 40%, rgba(8,8,8,.8) 100%); } }
+/* Thank-you page: centre the card in the viewport */
+.ty { display: block; }
+.ty > .wrap { display: flex; justify-content: center; }
+.ty-card { margin: 0 auto; }
