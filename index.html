@@ -376,11 +376,11 @@
       </div>
       <p class="err" id="tpl-phone-err" aria-live="polite"></p>
     </div>
-    <fieldset class="field chips">
-      <legend>Interested in <span class="opt">(optional)</span></legend>
-      <label><input type="radio" name="configuration" value="3 BHK Type 10"><span>3 BHK + 2T · 1,584 sq ft</span></label>
-      <label><input type="radio" name="configuration" value="3 BHK Type 12"><span>3 BHK · 1,829 sq ft</span></label>
-    </fieldset>
+    <div class="field">
+      <label for="tpl-email" class="sr-only">Email</label>
+      <input id="tpl-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="120" placeholder="Email">
+      <p class="err" id="tpl-email-err" aria-live="polite"></p>
+    </div>
     <div class="hp" aria-hidden="true">
       <label for="tpl-company">Company</label>
       <input id="tpl-company" name="company" type="text" tabindex="-1" autocomplete="off">

@@ -103,9 +103,12 @@
     else setError(form, "name", "");
     if (!phoneValid(cc, digits)) { setError(form, "phone", cc === "+91" ? "Please enter a valid 10-digit Indian mobile number (starting 6–9)." : "Please enter a valid mobile number."); ok = false; first = first || form.elements.phone; }
     else setError(form, "phone", "");
+    var email = (form.elements.email ? form.elements.email.value.trim() : "");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setError(form, "email", "Please enter a valid email address."); ok = false; first = first || form.elements.email; }
+    else setError(form, "email", "");
     if (!form.elements.consent.checked) { setError(form, "consent", "Please tick the box so the sales team can contact you."); ok = false; first = first || form.elements.consent; }
     else setError(form, "consent", "");
-    return { ok: ok, first: first, name: name, cc: cc, digits: digits };
+    return { ok: ok, first: first, name: name, cc: cc, digits: digits, email: email };
   }
 
   function buildForm(slot) {
@@ -162,7 +165,7 @@
     }
 
     var intent = intentFor(formId);
-    var config = (form.querySelector('input[name="configuration"]:checked') || {}).value || "";
+    var config = form.getAttribute("data-config") || "";
     track("form_submit", { form_id: formId, intent: intent, configuration: config || "not_specified" });
 
     if (submitted) { showSuccess(form, v.name, true, intent); return; }
@@ -178,6 +181,7 @@
       project: "Niwa & Neo",
       name: v.name,
       phone: v.cc + v.digits,
+      email: v.email,
       country_code: v.cc,
       configuration: config,
       intent: intent,
@@ -267,7 +271,7 @@
     var form = modal.querySelector("form");
     if (form) {
       form.querySelector('button[type="submit"]').textContent = INTENTS[modalIntent].button;
-      if (config) { var r = form.querySelector('input[name="configuration"][value="' + config + '"]'); if (r) r.checked = true; }
+      if (config) form.setAttribute("data-config", config); else form.removeAttribute("data-config");
     }
     if (typeof modal.showModal !== "function") { document.getElementById("contact").scrollIntoView(); return; }
     if (!modal.open) modal.showModal();
