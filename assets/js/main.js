@@ -81,9 +81,21 @@
   /* ---------- lead forms ---------- */
   var tpl = document.getElementById("lead-form-tpl");
 
+  /* Rejects junk numbers: all-same digits, runs like 1234567890 / 9876543210,
+   * fewer than 4 distinct digits, one digit repeated 7+ times, or repeated pairs (9898989898). */
+  function looksJunk(d) {
+    if (/^(\d)\1+$/.test(d)) return true;
+    if ("01234567890123456789".indexOf(d) > -1 || "98765432109876543210".indexOf(d) > -1) return true;
+    var uniq = {}; for (var i = 0; i < d.length; i++) uniq[d.charAt(i)] = (uniq[d.charAt(i)] || 0) + 1;
+    if (Object.keys(uniq).length < 4) return true;
+    for (var k in uniq) if (uniq[k] >= 7) return true;
+    if (/^(\d{2})\1{3,}/.test(d) || /^(\d{3})\1{2,}/.test(d)) return true;
+    if (/(\d)\1{5,}/.test(d)) return true;
+    return false;
+  }
   function phoneValid(cc, digits) {
-    if (cc === "+91") return /^[6-9]\d{9}$/.test(digits);
-    return /^\d{6,14}$/.test(digits);
+    if (cc === "+91") return /^[6-9]\d{9}$/.test(digits) && !looksJunk(digits);
+    return /^\d{6,14}$/.test(digits) && !looksJunk(digits);
   }
   function setError(form, name, msg) {
     var input = form.querySelector('[name="' + name + '"]');
@@ -101,10 +113,10 @@
     if (cc === "+91" && digits.length === 11 && digits.charAt(0) === "0") digits = digits.slice(1);
     if (name.length < 2 || !/[A-Za-zऀ-ൿ]/.test(name)) { setError(form, "name", "Please enter your name."); ok = false; first = first || form.elements.name; }
     else setError(form, "name", "");
-    if (!phoneValid(cc, digits)) { setError(form, "phone", cc === "+91" ? "Please enter a valid 10-digit Indian mobile number (starting 6–9)." : "Please enter a valid mobile number."); ok = false; first = first || form.elements.phone; }
+    if (!phoneValid(cc, digits)) { setError(form, "phone", cc === "+91" ? "Please enter a real 10-digit Indian mobile number (starting 6–9)." : "Please enter a valid mobile number."); ok = false; first = first || form.elements.phone; }
     else setError(form, "phone", "");
     var email = (form.elements.email ? form.elements.email.value.trim() : "");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setError(form, "email", "Please enter a valid email address."); ok = false; first = first || form.elements.email; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setError(form, "email", "Please enter a valid email address."); ok = false; first = first || form.elements.email; }
     else setError(form, "email", "");
     if (!form.elements.consent.checked) { setError(form, "consent", "Please tick the box so the sales team can contact you."); ok = false; first = first || form.elements.consent; }
     else setError(form, "consent", "");
