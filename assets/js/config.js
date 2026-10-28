@@ -42,7 +42,7 @@ window.SS_CONFIG = {
   brochureUrl: "",
 
   /* Channel-partner / agent RERA number, shown in the footer when set. */
-  agentRera: "",
+  agentRera: "PRM/KA/RERA/1251/446/AG/210729/002406",
 
   /* Named in the consent line: who will contact the enquirer. Confirm before launch. */
   consentEntity: "Assetz Property Group, KVN and their authorised sales partners",

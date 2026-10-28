@@ -407,3 +407,5 @@ html:not(.ss-editing) [data-edit]:empty { display: none; }
 .ty { display: block; }
 .ty > .wrap { display: flex; justify-content: center; }
 .ty-card { margin: 0 auto; }
+
+.foot-credits { margin-top: 10px; }
