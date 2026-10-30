@@ -19,6 +19,28 @@
     } catch (e) { return null; }
   }
 
+  /* ---------- duplicate-enquiry guard ----------
+   * Remembers which phone numbers already enquired from this browser (localStorage, 30 days),
+   * so the same person re-submitting in a new tab, after a refresh, or from the popup + hero form
+   * is not sent to the webhook again. A different phone number is still accepted as a new lead. */
+  var LEAD_STORE = "nn_leads", LEAD_TTL = 30 * 24 * 3600 * 1000;
+  function readLeads() {
+    try {
+      var all = JSON.parse(localStorage.getItem(LEAD_STORE) || "{}") || {}, now = Date.now(), out = {};
+      for (var p in all) if (Object.prototype.hasOwnProperty.call(all, p) && now - all[p] < LEAD_TTL) out[p] = all[p];
+      return out;
+    } catch (e) { return {}; }
+  }
+  function rememberLead(phone) {
+    try { var all = readLeads(); all[phone] = Date.now(); localStorage.setItem(LEAD_STORE, JSON.stringify(all)); } catch (e) {}
+  }
+  function hasLead(phone) { return Object.prototype.hasOwnProperty.call(readLeads(), phone); }
+  function anyLead() { return Object.keys(readLeads()).length > 0; }
+  function newLeadId() {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return "nn-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+  }
+
   /* ---------- config-driven content ---------- */
   if (CFG.phoneE164) document.querySelectorAll(".js-phone").forEach(function (a) { a.href = "tel:" + CFG.phoneE164; });
   if (CFG.phoneDisplay) {
@@ -60,7 +82,8 @@
 
   /* ---------- state ---------- */
   var pageLoadedAt = Date.now();
-  var submitted = ss("ss_lead") === "1"; // one lead per session
+  var submitted = ss("ss_lead") === "1" || anyLead(); // already enquired from this browser
+  var sending = false; // one request in flight across all forms (hero, popup, inline)
   var anyFormStarted = false;
   var modalIntent = "general";
 
@@ -164,7 +187,7 @@
   function handleSubmit(form, formId) {
     var btn = form.querySelector('button[type="submit"]');
     var status = form.querySelector(".form-status");
-    if (btn.disabled) return;
+    if (btn.disabled || sending) return;
     status.textContent = ""; status.className = "form-status";
 
     var v = validate(form);
@@ -180,7 +203,12 @@
     var config = form.getAttribute("data-config") || "";
     track("form_submit", { form_id: formId, intent: intent, configuration: config || "not_specified" });
 
-    if (submitted) { showSuccess(form, v.name, true, intent); return; }
+    var phoneKey = v.cc + v.digits;
+    if (hasLead(phoneKey)) {
+      track("lead_duplicate_blocked", { form_id: formId, intent: intent });
+      showSuccess(form, v.name, true, intent);
+      return;
+    }
 
     if (!CFG.leadEndpoint) {
       console.warn("[Niwa & Neo] SS_CONFIG.leadEndpoint is empty, so the lead was NOT sent. Configure it in assets/js/config.js.");
@@ -189,7 +217,9 @@
       return;
     }
 
+    var leadId = newLeadId();
     var payload = {
+      lead_id: leadId,
       project: "Niwa & Neo",
       developer: "Assetz Property Group & KVN",
       location: "Bagalur, North Bengaluru",
@@ -209,7 +239,7 @@
     };
     ATTR_KEYS.concat(["landing_page", "referrer"]).forEach(function (k) { if (attribution[k]) payload[k] = attribution[k]; });
 
-    btn.disabled = true;
+    btn.disabled = true; sending = true;
     var label = btn.textContent;
     btn.textContent = "Sending…";
     var controller = "AbortController" in window ? new AbortController() : null;
@@ -232,15 +262,17 @@
     fetch(CFG.leadEndpoint, req).then(function (res) {
       clearTimeout(timer);
       if (res.type !== "opaque" && !res.ok) throw new Error("HTTP " + res.status);
-      submitted = true; ss("ss_lead", "1"); unlockPlans();
-      track("lead_submit_success", { form_id: formId, intent: intent, configuration: config || "not_specified" });
-      if (CFG.thankYouUrl) location.assign(CFG.thankYouUrl);
+      submitted = true; ss("ss_lead", "1"); rememberLead(phoneKey); unlockPlans();
+      track("lead_submit_success", { form_id: formId, intent: intent, configuration: config || "not_specified", lead_id: leadId });
+      // One-time pass for the thank-you page: it fires the conversion event only when this is present.
+      ss("nn_ty", leadId);
+      if (CFG.thankYouUrl) location.replace(CFG.thankYouUrl); // replace: Back doesn't return to a filled form
       else showSuccess(form, v.name, false, intent);
     }).catch(function (err) {
       clearTimeout(timer);
       console.error("[Niwa & Neo] lead submit failed", err);
       track("lead_submit_error", { form_id: formId, reason: "network_or_server" });
-      btn.disabled = false; btn.textContent = label;
+      btn.disabled = false; sending = false; btn.textContent = label;
       showError(form, "Something went wrong sending your details. Please try again, or call ");
     });
   }
@@ -266,7 +298,7 @@
     var h = document.createElement("h4"); h.textContent = "Thank you, " + first + ".";
     var p = document.createElement("p");
     p.textContent = repeat
-      ? "We already have your details from this visit. The Niwa & Neo sales team will be in touch."
+      ? "We already have your enquiry for this number, so there's no need to submit again. The Niwa & Neo sales team will be in touch."
       : "We've received your details. The Niwa & Neo sales team will contact you shortly.";
     box.appendChild(tick); box.appendChild(h); box.appendChild(p);
     if (intent === "floor_plan") {

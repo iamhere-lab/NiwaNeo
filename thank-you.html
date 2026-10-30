@@ -25,7 +25,15 @@
 <script src="assets/js/config.js"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: "lead_thank_you", project: "Niwa & Neo" });
+  // Fire the conversion event only once per real enquiry: the form leaves a one-time lead_id in this tab.
+  // A refresh, a bookmark or a direct visit gets "thank_you_revisit" instead, so it can't count as a second lead.
+  (function () {
+    var id = null;
+    try { id = sessionStorage.getItem("nn_ty"); sessionStorage.removeItem("nn_ty"); } catch (e) {}
+    window.dataLayer.push(id
+      ? { event: "lead_thank_you", project: "Niwa & Neo", lead_id: id }
+      : { event: "thank_you_revisit", project: "Niwa & Neo" });
+  })();
   (function (id) {
     if (!id) return;
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',id);
