@@ -416,3 +416,5 @@ html:not(.ss-editing) [data-edit]:empty { display: none; }
 .why-grid h3 + p { margin: 4px 0 0; font-size: 14px; color: var(--grey-2); }
 @media (min-width: 1100px) { .why-grid { grid-template-columns: repeat(2, 1fr); } }
 .why-cta { text-align: center; margin: 30px 0 0; }
+.intro-aka { margin: 6px 0 0; font-size: 14px; color: var(--grey-2); }
+.intro-aka strong { color: var(--ink); font-weight: 600; }
