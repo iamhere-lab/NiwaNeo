@@ -409,3 +409,10 @@ html:not(.ss-editing) [data-edit]:empty { display: none; }
 .ty-card { margin: 0 auto; }
 
 .foot-credits { margin-top: 10px; }
+
+/* Why Bagalur */
+.why-bagalur { background: var(--white); }
+.why-grid h3 { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.35; color: var(--ink); }
+.why-grid h3 + p { margin: 4px 0 0; font-size: 14px; color: var(--grey-2); }
+@media (min-width: 1100px) { .why-grid { grid-template-columns: repeat(2, 1fr); } }
+.why-cta { text-align: center; margin: 30px 0 0; }
