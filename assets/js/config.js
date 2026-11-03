@@ -51,5 +51,5 @@ window.SS_CONFIG = {
   siteUrl: "",
 
   /* Full privacy policy URL. The footer link only renders when this is set. */
-  privacyUrl: ""
+  privacyUrl: "privacy.html"
 };
