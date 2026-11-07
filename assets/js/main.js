@@ -360,7 +360,11 @@
     var href = el.getAttribute("href") || "";
     if (href.indexOf("tel:") === 0) track("phone_click", { cta_location: cta || "inline" });
     else if (href.indexOf("mailto:") === 0) track("email_click", { cta_location: cta || "inline" });
-    else if (href.indexOf("wa.me") > -1) track("whatsapp_click", { cta_location: cta || "inline" });
+    else if (href.indexOf("wa.me") > -1) {
+      track("whatsapp_click", { cta_location: cta || "inline" });
+      // Google Ads conversion "Assetz_WhatsApp click" (counted once per ad click by Google)
+      try { if (typeof window.gtag === "function") window.gtag("event", "conversion", { send_to: "AW-18543741279/WIV3CMi45LMdEN-SrIpF" }); } catch (err) {}
+    }
     else if (cta) track("cta_click", { cta_location: cta, cta_label: (el.textContent || "").trim().slice(0, 60) });
     if (el.classList.contains("js-open-enquiry")) {
       e.preventDefault();
