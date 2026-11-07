@@ -30,8 +30,8 @@ window.SS_CONFIG = {
 
   /* WhatsApp number, digits only with country code, e.g. "917406917711".
    * All WhatsApp buttons stay hidden until this is set. Confirm the number is on WhatsApp. */
-  whatsappNumber: "",
-  whatsappMessage: "Hi, I'm interested in Assetz Niwa & Neo, North Bengaluru. Please share the price and floor plans.",
+  whatsappNumber: "917406917711",
+  whatsappMessage: "I am Interested in Assetz Niwa & Neo 3BHK Apartments starting at ₹1.85 CR in pre-launch phase, please share more details!",
 
   /* Auto-open the enquiry popup after this many seconds (once per session).
    * 0 disables auto-open; the popup still opens from every Enquire button. */
