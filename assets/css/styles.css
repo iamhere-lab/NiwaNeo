@@ -372,6 +372,7 @@ html:not(.ss-editing) [data-edit]:empty { display: none; }
 .hero-copy { color: #fff; text-align: center; }
 .hero-eyebrow { margin: 0 0 10px; font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--beige); }
 .hero-mark { width: clamp(150px, 20vw, 240px); height: auto; margin: 0 auto 14px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.45)); }
+.hero-offer { display: inline-block; margin: 0 0 12px; padding: 6px 14px; border-radius: 999px; background: var(--beige); color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-shadow: none; }
 .hero-line { margin: 0 0 6px; font-size: 15px; color: #f1ece6; }
 .hero-price { margin: 0; font-family: var(--serif); font-size: 20px; font-weight: 600; color: #fff; }
 .hero-form { background: var(--white); border-radius: var(--radius); padding: 22px 20px 18px; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); max-width: 440px; width: 100%; margin: 0 auto; }
