@@ -31,6 +31,7 @@ window.SS_CONFIG = {
   /* WhatsApp number, digits only with country code, e.g. "917406917711".
    * All WhatsApp buttons stay hidden until this is set. Confirm the number is on WhatsApp. */
   whatsappNumber: "917406917711",
+  callConversionSendTo: "AW-18543741279/ya4dCND68rYdEN-SrIpF",
   whatsappMessage: "I am Interested in Assetz Niwa & Neo 3BHK Apartments starting at ₹1.85 CR in pre-launch phase, please share more details!",
 
   /* Auto-open the enquiry popup after this many seconds (once per session).
