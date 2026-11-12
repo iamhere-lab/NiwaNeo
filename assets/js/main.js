@@ -88,8 +88,8 @@
   var modalIntent = "general";
 
   var INTENTS = {
-    general:    { title: "Unlock price & floor plans", button: "Get Price Sheet & Floor Plans" },
-    price:      { title: "Get the complete price sheet", button: "Send Me the Price Sheet" },
+    general:    { title: "Unlock price & launch offer", button: "Get Launch Offer & Price Sheet" },
+    price:      { title: "Get the price sheet & launch offer", button: "Send Price Sheet & Offer" },
     brochure:   { title: "Download the e-brochure", button: "Send Me the Brochure" },
     floor_plan: { title: "Download the floor plans", button: "Send Me the Floor Plans" },
     site_visit: { title: "Book your private site visit", button: "Reserve My Visit Slot" }
@@ -358,7 +358,10 @@
     if (el.classList.contains("js-plan")) return; // tracked by the plan handler
     var cta = el.getAttribute("data-cta") || "";
     var href = el.getAttribute("href") || "";
-    if (href.indexOf("tel:") === 0) track("phone_click", { cta_location: cta || "inline" });
+    if (href.indexOf("tel:") === 0) {
+      track("phone_click", { cta_location: cta || "inline" });
+      try { if (CFG.callConversionSendTo && typeof window.gtag === "function") window.gtag("event", "conversion", { send_to: CFG.callConversionSendTo }); } catch (err) {}
+    }
     else if (href.indexOf("mailto:") === 0) track("email_click", { cta_location: cta || "inline" });
     else if (href.indexOf("wa.me") > -1) {
       track("whatsapp_click", { cta_location: cta || "inline" });
