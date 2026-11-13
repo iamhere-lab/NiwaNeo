@@ -329,7 +329,7 @@
       form.querySelector('button[type="submit"]').textContent = INTENTS[modalIntent].button;
       if (config) form.setAttribute("data-config", config); else form.removeAttribute("data-config");
     }
-    if (typeof modal.showModal !== "function") { document.getElementById("contact").scrollIntoView(); return; }
+    if (typeof modal.showModal !== "function") { document.getElementById("hero").scrollIntoView(); return; }
     if (!modal.open) modal.showModal();
     track("popup_open", { intent: modalIntent, source: source || "click" });
     var firstInput = modal.querySelector("input[name=name]");
